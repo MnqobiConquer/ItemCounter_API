@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ItemCounter_API.Model;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace ItemCounter_API.Controllers
@@ -8,19 +9,21 @@ namespace ItemCounter_API.Controllers
     public class CountController : ControllerBase
     {
         [HttpPost]
-        public IActionResult CountItems([FromBody] List<object> items)
+        public IActionResult CountItems([FromBody] CountItemRequest request)
         {
-            if (items == null || items.Count == 0)
+            if (request == null || request.Items == null || request.Items.Count == 0)
                 return BadRequest("No items provided.");
 
-            Dictionary<object, int> counts = new Dictionary<object, int>();
+            Dictionary<string, int> counts = new Dictionary<string, int>();
 
-            foreach (var item in items)
+            foreach (var item in request.Items)
             {
-                if (counts.ContainsKey(item))
-                    counts[item]++;
+                string key = item.ToString(); 
+
+                if (counts.ContainsKey(key))
+                    counts[key]++;
                 else
-                    counts[item] = 1;
+                    counts[key] = 1;
             }
 
             return Ok(counts);
